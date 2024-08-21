@@ -14,7 +14,7 @@ spec:
     spec:
       containers: 
         - name: nginx
-          image: docker push kkmee0209/blue-nginx:v2.0
+          image: kkmee0209/blue-nginx:v2.0
           ports:
             - name: http
               containerPort: 80
