@@ -51,6 +51,7 @@ jobs:
             service.yaml
             blue-deploy.yaml
           strategy: blue-green
+          route-method: service
           action: deploy  #deploy is the default; we will later use this to promote/reject
 
   approveapp:
