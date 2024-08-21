@@ -51,6 +51,7 @@ jobs:
            manifests: |
               green-deploy.yaml
               service.yaml
+              ingress.yaml
            strategy: blue-green
            action: deploy
            route-method: service # substitute with service/smi as per need
