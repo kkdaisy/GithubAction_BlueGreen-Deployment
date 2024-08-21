@@ -66,9 +66,9 @@ jobs:
         if: ${{ success() }}
         with:
           manifests: |
-            ./kubernetes/green-deploy.yaml
-            ./kubernetes/service.yaml
-            ./kubernetes/ingress.yaml
+            green-deploy.yaml
+            service.yaml
+            ingress.yaml
           strategy: blue-green
           action: promote  #deploy is the default; we will later use this to promote/reject
 
@@ -77,9 +77,9 @@ jobs:
         if: ${{ failure() }}
         with:
           manifests: |
-            ./kubernetes/blue-deploy.yaml
-            ./kubernetes/service.yaml
-            ./kubernetes/ingress.yaml
+             blue-deploy.yaml
+             service.yaml
+             ingress.yaml
           strategy: blue-green
           action: reject  #deploy is the default; we will later use this to promote/reject
 
