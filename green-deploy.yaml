@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-2
+  name: nginx-3
 spec:
   replicas: 3
   selector:
@@ -14,7 +14,7 @@ spec:
     spec:
       containers: 
         - name: nginx
-          image: kkmee0209/blue-nginx:v2.0
+          image: kkmee0209/blue-nginx:v3.0
           ports:
             - name: http
               containerPort: 80
