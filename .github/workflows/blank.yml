@@ -47,7 +47,6 @@ jobs:
       - name: Deploy app
         uses: Azure/k8s-deploy@v5
         with:
-           images: 'kkmee0209/blue-nginx:v2.0'
            manifests: |
               green-deploy.yaml
               service.yaml
