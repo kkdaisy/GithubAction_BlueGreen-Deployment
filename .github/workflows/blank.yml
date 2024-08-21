@@ -59,6 +59,7 @@ jobs:
     environment: akspromotion
     steps:
       - run: echo asked for approval
+      - uses: actions/checkout@v2
 
       - name: Promote App
         uses: azure/k8s-deploy@v1.3
