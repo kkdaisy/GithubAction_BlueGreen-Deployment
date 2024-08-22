@@ -8,7 +8,6 @@ on:
   workflow_dispatch:
 
 env:
-  ACR_REPO_NAME: kkmee0209/blue-nginx
   ARTIFACT_NAME: blue-nginx
   RESOURCE_GROUP: kmtest
   AKS_CLUSTER_NAME: kmtestaks
@@ -40,25 +39,18 @@ jobs:
           cluster-name: ${{ env.AKS_CLUSTER_NAME }}
           admin: 'false'
           use-kubelogin: 'true'
- 
-      - name: Set AKS context
-        id: set-context
-        uses: azure/aks-set-context@v3
-        with:
-          resource-group: kmtest
-          cluster-name: kmtestaks
 
       - name: Deploy app
-        uses: azure/k8s-deploy@v1.3
+        uses: Azure/k8s-deploy@v5
         with:
           namespace: default
           manifests: |
             service.yaml
             blue-deploy.yaml
             ingress.yaml
-          strategy: blue-green
           images: |
-            kkmee0209/blue-nginx:v2.0          
+            kkmee0209/blue-nginx:v2.0     
+          strategy: blue-green
           route-method: service
           action: deploy
 
@@ -67,7 +59,7 @@ jobs:
     needs: deployapp
     environment: akspromotion
     steps:
-      - run: echo "Deployment complete. Waiting for approval to promote or reject."
+      - run: echo asked for approval
 
   promotereject:
     runs-on: ubuntu-latest
@@ -95,18 +87,13 @@ jobs:
           cluster-name: ${{ env.AKS_CLUSTER_NAME }}
           admin: 'false'
           use-kubelogin: 'true'
- 
-      - name: Set AKS context
-        id: set-context
-        uses: azure/aks-set-context@v3
-        with:
-          resource-group: kmtest
-          cluster-name: kmtestaks
           
       - name: Promote App
-        uses: azure/k8s-deploy@v1.3
+        uses: Azure/k8s-deploy@v5
         if: ${{ success() }}  # 승인이 성공적인 경우
         with:
+          action: promote
+          namespace: default        
           manifests: |
             green-deploy.yaml
             service.yaml
@@ -114,7 +101,7 @@ jobs:
           strategy: blue-green
           images: |
             kkmee0209/blue-nginx:v3.0
-          action: promote
+
   
       - name: Reject App
         uses: azure/k8s-deploy@v1.3
@@ -126,6 +113,6 @@ jobs:
             ingress.yaml
           strategy: blue-green
           images: |
-             kkmee0209/blue-nginx:v1.0
+            kkmee0209/blue-nginx:v1.0
           action: reject
 
