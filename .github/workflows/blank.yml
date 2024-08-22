@@ -40,6 +40,7 @@ jobs:
           manifests: |
             service.yaml
             blue-deploy.yaml
+            ingress.yaml
           strategy: blue-green
           images: |
             kkmee0209/blue-nginx:v2.0          
@@ -79,6 +80,7 @@ jobs:
           manifests: |
             green-deploy.yaml
             service.yaml
+            ingres.yaml
           strategy: blue-green
           images: |
             kkmee0209/blue-nginx:v2.0
@@ -91,6 +93,7 @@ jobs:
           manifests: |
             blue-deploy.yaml
             service.yaml
+            ingress.yaml
           strategy: blue-green
           images: |
              kkmee0209/blue-nginx:v3.0
