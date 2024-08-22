@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-3
+  name: nginxgreen
 spec:
   replicas: 3
   selector:
