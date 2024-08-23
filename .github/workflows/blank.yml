@@ -6,6 +6,14 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+    inputs:
+      approve_deployment:
+        description: 'Do you want to approve the deployment?'
+        required: true
+        type: choice
+        options:
+          - yes
+          - no
 
 env:
   ARTIFACT_NAME: blue-nginx
@@ -54,16 +62,29 @@ jobs:
           route-method: service
           action: deploy
 
+  approveapp:
+    runs-on: ubuntu-latest
+    needs: deployapp
+    steps:
+      - name: Check Approval
+        run: |
+          if [ "${{ github.event.inputs.approve_deployment }}" == "yes" ]; then
+            echo "Deployment approved"
+          else
+            echo "Deployment rejected"
+            exit 1
+          fi
+
   promotereject:
     runs-on: ubuntu-latest
     needs: deployapp
     environment: akspromotion
     continue-on-error: true
     steps:
-      - name: Approval Step
-        id: approval
-        run: 
-          echo "echo asked for approval"
+      # - name: Approval Step
+      #   id: approval
+      #   run: 
+      #     echo "echo asked for approval"
           
       - uses: actions/checkout@v4
 
@@ -89,7 +110,7 @@ jobs:
           use-kubelogin: 'true'
       
       - name: Promote App
-        if: success()
+        if: ${{ needs.approveapp.outputs.approve_deployment == 'yes' }}
         uses: Azure/k8s-deploy@v5
         with:
           action: promote
@@ -103,9 +124,11 @@ jobs:
             kkmee0209/blue-nginx:v2.0
 
       - name: Reject App
-        if: failure()
-        uses: azure/k8s-deploy@v1.3
+        if: ${{ needs.approveapp.outputs.approve_deployment == 'no' }}
+        uses: Azure/k8s-deploy@v5
         with:
+          action: reject
+          namespace: default
           manifests: |
             blue-deploy.yaml
             service.yaml
@@ -113,5 +136,3 @@ jobs:
           strategy: blue-green
           images: |
             kkmee0209/blue-nginx:v1.0
-          action: reject
-
