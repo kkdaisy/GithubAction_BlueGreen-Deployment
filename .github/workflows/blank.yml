@@ -65,16 +65,11 @@ jobs:
 
   promotereject:
     runs-on: ubuntu-latest
-    needs: deployapp
+    needs: [deployapp, approveapp]
     if: always()
     environment: akspromotion
     continue-on-error: true
     steps:
-      # - name: Approval Step
-      #   id: approval
-      #   run: 
-      #     echo "echo asked for approval"
-          
       - uses: actions/checkout@v4
 
       - name: Azure login
@@ -89,39 +84,5 @@ jobs:
         with:
           kubelogin-version: 'v0.0.25'
  
-      # Retrieves your Azure Kubernetes Service cluster's kubeconfig file
-      - name: Get K8s context
-        uses: azure/aks-set-context@v3
-        with:
-          resource-group: ${{ env.RESOURCE_GROUP }}
-          cluster-name: ${{ env.AKS_CLUSTER_NAME }}
-          admin: 'false'
-          use-kubelogin: 'true'
-      
-      - name: Promote App
-        if: ${{ success() }}  # 승인이 성공적인 경우
-        uses: Azure/k8s-deploy@v5
-        with:
-          action: promote
-          namespace: default        
-          manifests: |
-            green-deploy.yaml
-            service.yaml
-            ingress.yaml
-          strategy: blue-green
-          images: |
-            kkmee0209/blue-nginx:v2.0
+     
 
-      - name: Reject App
-        if: ${{ failure() }} # 승인이 실패한 경우
-        uses: Azure/k8s-deploy@v5
-        with:
-          action: reject
-          namespace: default
-          manifests: |
-            blue-deploy.yaml
-            service.yaml
-            ingress.yaml
-          strategy: blue-green
-          images: |
-            kkmee0209/blue-nginx:v1.0
