@@ -64,8 +64,8 @@ jobs:
   promotereject:
     runs-on: ubuntu-latest
     needs: approveapp
-    if: always() #needs.approveapp.result == 'failure'
-    steps:
+    if: always() && needs.approveapp.result == 'failure' && needs.approveapp.result == 'success'
+    steps: 
       - uses: actions/checkout@v4
 
       - name: Azure login
