@@ -100,7 +100,7 @@ jobs:
             ingress.yaml
           strategy: blue-green
           images: |
-            kkmee0209/blue-nginx:v3.0
+            kkmee0209/blue-nginx:v2.0
 
   
       - name: Reject App
