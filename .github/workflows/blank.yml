@@ -64,6 +64,7 @@ jobs:
   promotereject:
     runs-on: ubuntu-latest
     needs: approveapp
+    if: always() #needs.approveapp.result == 'failure'
     steps:
       - uses: actions/checkout@v4
 
