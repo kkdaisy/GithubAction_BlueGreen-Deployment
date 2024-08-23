@@ -54,18 +54,17 @@ jobs:
           route-method: service
           action: deploy
 
-  approveapp:
+  promotereject:
     runs-on: ubuntu-latest
     needs: deployapp
     environment: akspromotion
     steps:
-      - run: echo asked for approval
-
-  promotereject:
-    runs-on: ubuntu-latest
-    needs: approveapp
-    if: always() && needs.approveapp.result == 'failure' && needs.approveapp.result == 'success'
-    steps: 
+      - name: Approval Step
+        id: approval
+        run: |
+          echo "Waiting for manual approval..."
+          echo "approval_state=approved" >> $GITHUB_ENV # Simulating approval outcome; change as needed.
+          
       - uses: actions/checkout@v4
 
       - name: Azure login
@@ -88,10 +87,10 @@ jobs:
           cluster-name: ${{ env.AKS_CLUSTER_NAME }}
           admin: 'false'
           use-kubelogin: 'true'
-          
+      
       - name: Promote App
+        if: env.approval_state == 'approved'
         uses: Azure/k8s-deploy@v5
-        if: ${{ success() }}  # 승인이 성공적인 경우
         with:
           action: promote
           namespace: default        
@@ -103,10 +102,9 @@ jobs:
           images: |
             kkmee0209/blue-nginx:v2.0
 
-  
       - name: Reject App
+        if: env.approval_state != 'approved'
         uses: azure/k8s-deploy@v1.3
-        if: failure()
         with:
           manifests: |
             blue-deploy.yaml
