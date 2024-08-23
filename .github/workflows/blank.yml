@@ -84,5 +84,40 @@ jobs:
         with:
           kubelogin-version: 'v0.0.25'
  
-     
+      # Retrieves your Azure Kubernetes Service cluster's kubeconfig file
+      - name: Get K8s context
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: ${{ env.RESOURCE_GROUP }}
+          cluster-name: ${{ env.AKS_CLUSTER_NAME }}
+          admin: 'false'
+          use-kubelogin: 'true'
+      
+      - name: Promote App
+        if: ${{ needs.approveapp.result == 'success' }}  # approveapp 작업이 성공한 경우에만 실행
+        uses: Azure/k8s-deploy@v5
+        with:
+          action: promote
+          namespace: default        
+          manifests: |
+            green-deploy.yaml
+            service.yaml
+            ingress.yaml
+          strategy: blue-green
+          images: |
+            kkmee0209/blue-nginx:v2.0
+
+      - name: Reject App
+        if: ${{ needs.approveapp.result == 'failure' }} # approveapp 작업이 실패한 경우에만 실행
+        uses: Azure/k8s-deploy@v5
+        with:
+          action: reject
+          namespace: default
+          manifests: |
+            blue-deploy.yaml
+            service.yaml
+            ingress.yaml
+          strategy: blue-green
+          images: |
+            kkmee0209/blue-nginx:v1.0
 
