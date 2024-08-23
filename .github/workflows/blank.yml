@@ -58,12 +58,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: deployapp
     environment: akspromotion
+    continue-on-error: true
     steps:
       - name: Approval Step
         id: approval
-        run: |
-          echo "Waiting for manual approval..."
-          echo "approval_state=approved" >> $GITHUB_ENV # Simulating approval outcome; change as needed.
+        run: 
+          echo "echo asked for approval"
           
       - uses: actions/checkout@v4
 
@@ -89,7 +89,7 @@ jobs:
           use-kubelogin: 'true'
       
       - name: Promote App
-        if: env.approval_state == 'approved'
+        if: success()
         uses: Azure/k8s-deploy@v5
         with:
           action: promote
@@ -103,7 +103,7 @@ jobs:
             kkmee0209/blue-nginx:v2.0
 
       - name: Reject App
-        if: env.approval_state != 'approved'
+        if: failure()
         uses: azure/k8s-deploy@v1.3
         with:
           manifests: |
