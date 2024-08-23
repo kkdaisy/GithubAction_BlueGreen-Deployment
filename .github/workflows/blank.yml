@@ -15,10 +15,10 @@ env:
 jobs:
   deployapp:
     runs-on: ubuntu-latest
-
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
-
+        
       - name: Azure login
         id: login
         uses: azure/login@v1.4.3
