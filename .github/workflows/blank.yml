@@ -62,18 +62,16 @@ jobs:
           route-method: service
           action: deploy
 
+
   approveapp:
     runs-on: ubuntu-latest
     needs: deployapp
+    outputs:
+      approve_deployment: ${{ steps.get_input.outputs.approve_deployment }}
     steps:
-      - name: Check Approval
-        run: |
-          if [ "${{ github.event.inputs.approve_deployment }}" == "yes" ]; then
-            echo "Deployment approved"
-          else
-            echo "Deployment rejected"
-            exit 1
-          fi
+      - id: get_input
+        run: echo "::set-output name=approve_deployment::${{ github.event.inputs.approve_deployment }}"
+
 
   promotereject:
     runs-on: ubuntu-latest
