@@ -94,8 +94,8 @@ jobs:
           use-kubelogin: 'true'
       
       - name: Promote App
-        if: ${{ success() }}      
-        #if: ${{ needs.approveapp.result == 'success' }}  # approveapp 작업이 성공한 경우에만 실행
+        # if: ${{ success() }}      
+        if: ${{ needs.approveapp.result == 'success' }}  # approveapp 작업이 성공한 경우에만 실행
         uses: Azure/k8s-deploy@v5
         with:
           action: promote
@@ -109,8 +109,8 @@ jobs:
             kkmee0209/blue-nginx:v2.0
 
       - name: Reject App
-        if: ${{ failure() }}      
-        #if: ${{ needs.approveapp.result == 'failure' }} # approveapp 작업이 실패한 경우에만 실행
+        # if: ${{ failure() }}      
+        if: ${{ needs.approveapp.result == 'failure' }} # approveapp 작업이 실패한 경우에만 실행
         uses: Azure/k8s-deploy@v5
         with:
           action: reject
