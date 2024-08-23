@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [deployapp, approveapp]
     if: always()
-    environment: akspromotion
+    # environment: akspromotion
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
